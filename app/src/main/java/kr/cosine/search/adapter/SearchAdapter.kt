@@ -1,8 +1,8 @@
-package kr.cosine.search.view
+package kr.cosine.search.adapter
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,7 +10,9 @@ import kr.cosine.search.databinding.ItemSearchBinding
 import kr.cosine.search.infrastructure.persistence.entity.ImageDocumentEntity
 
 class SearchAdapter(
-    private val imageDocumentEntities: ArrayList<ImageDocumentEntity>
+    private val imageDocumentEntities: ArrayList<ImageDocumentEntity> = arrayListOf(),
+    private val hideSwitch: Boolean = false,
+    private val switchScope: (ImageDocumentEntity, Boolean) -> Unit = { _, _ -> },
 ) : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     inner class SearchViewHolder(
@@ -18,6 +20,21 @@ class SearchAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val glide = Glide.with(binding.root)
+
+        init {
+            binding.bookmarkSwitch.apply {
+                if (hideSwitch) {
+                    visibility = View.GONE
+                    return@apply
+                }
+                setOnCheckedChangeListener { _, isChecked ->
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        switchScope(imageDocumentEntities[position], isChecked)
+                    }
+                }
+            }
+        }
 
         fun bind(imageDocumentEntity: ImageDocumentEntity) = with(binding) {
             glide.load(imageDocumentEntity.imageUrl).into(previewImageView)

@@ -13,7 +13,7 @@ class AuthorizationInterceptor : Interceptor {
             .newBuilder()
             .addHeader(
                 "Authorization",
-                "KakaoAK %s".format("Key") // 공백 처리
+                "KakaoAK %s".format("044283f9c2979fe25015d332a8cf8042") // 공백 처리
             ).build()
         return chain.proceed(newRequest)
     }

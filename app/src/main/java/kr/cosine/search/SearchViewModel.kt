@@ -15,10 +15,21 @@ class SearchViewModel(
     private val _searchResults: MutableLiveData<List<ImageDocumentEntity>> = MutableLiveData()
     val serachResults: LiveData<List<ImageDocumentEntity>> get() = _searchResults
 
+    private val _bookmark: MutableLiveData<List<ImageDocumentEntity>> = MutableLiveData(emptyList())
+    val bookmark: LiveData<List<ImageDocumentEntity>> get() = _bookmark
+
     fun onSearch(query: String) {
         viewModelScope.launch {
             val searchImageEntity = searchRepository.getSearchImage(query)
-            _searchResults.value = searchImageEntity.documents
+            _searchResults.value = searchImageEntity.documents ?: return@launch
         }
+    }
+
+    fun addBookmark(imageDocumentEntity: ImageDocumentEntity) {
+        _bookmark.value = (_bookmark.value ?: emptyList()) + imageDocumentEntity
+    }
+
+    fun removeBookmark(imageDocumentEntity: ImageDocumentEntity) {
+        _bookmark.value = (_bookmark.value ?: emptyList()) - imageDocumentEntity
     }
 }
